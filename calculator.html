@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dark Scientific Calculator</title>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* ============================
+       DARK THEME · SCIENTIFIC CALC
+       ============================ */
+
+    /* ----- Reset & Base ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0b0e14;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.2rem;
+      margin: 0;
+      color: #eef2f6;
+    }
+
+    /* ----- Main Container ----- */
+    .calc-wrapper {
+      width: 100%;
+      max-width: 580px;
+      background: #141a24;
+      border-radius: 40px;
+      padding: 1.8rem 1.5rem 2rem;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .calc-wrapper:hover {
+      box-shadow: 0 40px 90px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.07);
+    }
+
+    /* ----- Header / Brand ----- */
+    .calc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      padding: 0 0.2rem;
+    }
+
+    .calc-header h1 {
+      font-size: 1.25rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: #c8d0dc;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .calc-header h1 i {
+      color: #7c8cf0;
+      font-size: 1.2rem;
+    }
+
+    .calc-header .badge {
+      font-size: 0.7rem;
+      background: #202a36;
+      color: #8f9eb0;
+      padding: 0.25rem 0.8rem;
+      border-radius: 30px;
+      letter-spacing: 0.02em;
+      font-weight: 400;
+      border: 1px solid #2a3645;
+    }
+
+    /* ----- Display Area ----- */
+    .display {
+      background: #0d111a;
+      border-radius: 28px;
+      padding: 1.2rem 1.8rem;
+      margin-bottom: 1.5rem;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
+      border: 1px solid #1f2a36;
+      box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.6);
+      word-wrap: break-word;
+      overflow: hidden;
+    }
+
+    .display .expression {
+      width: 100%;
+      text-align: right;
+      font-size: 1.1rem;
+      color: #8f9eb0;
+      min-height: 1.8rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      transition: color 0.2s;
+      white-space: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .display .expression::-webkit-scrollbar {
+      display: none;
+    }
+
+    .display .result {
+      width: 100%;
+      text-align: right;
+      font-size: 2.7rem;
+      font-weight: 600;
+      color: #f0f4fa;
+      line-height: 1.2;
+      margin-top: 0.2rem;
+      transition: font-size 0.15s;
+      white-space: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .display .result::-webkit-scrollbar {
+      display: none;
+    }
+
+    .display .memory-indicator {
+      align-self: flex-start;
+      font-size: 0.7rem;
+      color: #5f7a9a;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.2rem;
+      min-height: 1rem;
+    }
+
+    /* ----- History Toggle ----- */
+    .history-toggle {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 0.6rem;
+    }
+
+    .history-toggle button {
+      background: transparent;
+      border: none;
+      color: #5f7a9a;
+      font-size: 0.8rem;
+      cursor: pointer;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .history-toggle button:hover {
+      background: #1f2a36;
+      color: #b0c4e0;
+    }
+
+    .history-panel {
+      background: #0d111a;
+      border-radius: 20px;
+      padding: 0.6rem 0.8rem;
+      margin-bottom: 1.2rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.25s;
+      opacity: 0;
+      border: 1px solid #1f2a36;
+    }
+
+    .history-panel.open {
+      max-height: 200px;
+      padding: 0.8rem 0.8rem 0.4rem;
+      opacity: 1;
+      overflow-y: auto;
+    }
+
+    .history-panel::-webkit-scrollbar {
+      width: 4px;
+    }
+    .history-panel::-webkit-scrollbar-track {
+      background: #0d111a;
+    }
+    .history-panel::-webkit-scrollbar-thumb {
+      background: #2a3645;
+      border-radius: 10px;
+    }
+
+    .history-panel .history-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.3rem 0.2rem;
+      border-bottom: 1px solid #1a232f;
+      font-size: 0.85rem;
+      color: #b0c4e0;
+    }
+
+    .history-panel .history-item .h-expr {
+      color: #7c8cf0;
+    }
+
+    .history-panel .history-item .h-result {
+      color: #d0dcec;
+      font-weight: 500;
+    }
+
+    .history-panel .empty-history {
+      color: #4a5a70;
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 0.6rem 0;
+    }
+
+    /* ----- Button Grid ----- */
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.7rem;
+    }
+
+    /* ----- Button Base ----- */
+    .btn {
+      background: #1f2a36;
+      border: none;
+      border-radius: 18px;
+      padding: 0.9rem 0.1rem;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: #eef2f6;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.08s, box-shadow 0.15s;
+      box-shadow: 0 4px 0 #0d111a, 0 6px 12px rgba(0, 0, 0, 0.4);
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2rem;
+      line-height: 1;
+      min-height: 58px;
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #0d111a, 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn:hover {
+      background: #2a364a;
+    }
+
+    /* ----- Button Variants ----- */
+    .btn.func {
+      background: #1a2533;
+      color: #7c8cf0;
+      font-size: 0.95rem;
+    }
+
+    .btn.func:hover {
+      background: #253244;
+    }
+
+    .btn.operator {
+      background: #2a3a50;
+      color: #b0c8f0;
+      font-size: 1.4rem;
+    }
+
+    .btn.operator:hover {
+      background: #344a64;
+    }
+
+    .btn.equals {
+      background: #4a6cf0;
+      color: #fff;
+      box-shadow: 0 4px 0 #1a2f7a, 0 6px 16px rgba(74, 108, 240, 0.35);
+    }
+
+    .btn.equals:hover {
+      background: #5a7cf5;
+    }
+
+    .btn.equals:active {
+      box-shadow: 0 1px 0 #1a2f7a, 0 6px 16px rgba(74, 108, 240, 0.35);
+    }
+
+    .btn.clear {
+      background: #3a2a3a;
+      color: #f08090;
+    }
+
+    .btn.clear:hover {
+      background: #4a344a;
+    }
+
+    .btn.memory {
+      background: #1e2a2e;
+      color: #70b0b0;
+      font-size: 0.85rem;
+    }
+
+    .btn.memory:hover {
+      background: #2a3a3e;
+    }
+
+    .btn.span-2 {
+      grid-column: span 2;
+    }
+
+    /* ----- Responsive ----- */
+    @media (max-width: 540px) {
+      .calc-wrapper {
+        padding: 1.2rem 0.9rem 1.5rem;
+        border-radius: 30px;
+      }
+
+      .display {
+        padding: 0.9rem 1.2rem;
+        min-height: 90px;
+      }
+      .display .result {
+        font-size: 2.2rem;
+      }
+      .display .expression {
+        font-size: 0.95rem;
+      }
+
+      .btn-grid {
+        gap: 0.5rem;
+      }
+      .btn {
+        padding: 0.7rem 0.1rem;
+        font-size: 1rem;
+        min-height: 48px;
+        border-radius: 14px;
+      }
+      .btn.operator {
+        font-size: 1.2rem;
+      }
+      .btn.func {
+        font-size: 0.8rem;
+      }
+      .btn.memory {
+        font-size: 0.7rem;
+      }
+
+      .calc-header h1 {
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .btn-grid {
+        gap: 0.35rem;
+      }
+      .btn {
+        min-height: 40px;
+        font-size: 0.85rem;
+        border-radius: 12px;
+        padding: 0.4rem 0.1rem;
+      }
+      .display .result {
+        font-size: 1.8rem;
+      }
+      .calc-wrapper {
+        padding: 0.8rem 0.6rem 1.2rem;
+      }
+    }
+
+    /* ----- Utility ----- */
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================ -->
+  <!-- CALCULATOR APP – DARK SCIENTIFIC                              -->
+  <!-- ============================================================ -->
+  <div class="calc-wrapper" role="application" aria-label="Scientific Calculator">
+
+    <!-- Header -->
+    <div class="calc-header">
+      <h1><i class="fas fa-calculator"></i> SciCalc</h1>
+      <span class="badge"><i class="fas fa-moon"></i> dark</span>
+    </div>
+
+    <!-- Display -->
+    <div class="display" id="display">
+      <div class="memory-indicator" id="memIndicator">M · <span id="memValue">0</span></div>
+      <div class="expression" id="expression"></div>
+      <div class="result" id="result">0</div>
+    </div>
+
+    <!-- History toggle -->
+    <div class="history-toggle">
+      <button id="historyToggle"><i class="fas fa-history"></i> History</button>
+    </div>
+
+    <!-- History panel -->
+    <div class="history-panel" id="historyPanel">
+      <div id="historyList">
+        <div class="empty-history">No calculations yet.</div>
+      </div>
+    </div>
+
+    <!-- Button Grid -->
+    <div class="btn-grid" id="buttonGrid">
+
+      <!-- Row 1: Memory & special -->
+      <button class="btn memory" data-action="mc">MC</button>
+      <button class="btn memory" data-action="mr">MR</button>
+      <button class="btn memory" data-action="m+">M+</button>
+      <button class="btn memory" data-action="m-">M−</button>
+      <button class="btn func" data-action="%">%</button>
+
+      <!-- Row 2: Scientific left -->
+      <button class="btn func" data-action="sin">sin</button>
+      <button class="btn func" data-action="cos">cos</button>
+      <button class="btn func" data-action="tan">tan</button>
+      <button class="btn func" data-action="log">log</button>
+      <button class="btn func" data-action="ln">ln</button>
+
+      <!-- Row 3: Scientific right -->
+      <button class="btn func" data-action="sqrt">√</button>
+      <button class="btn func" data-action="x²">x²</button>
+      <button class="btn func" data-action="x³">x³</button>
+      <button class="btn func" data-action="xⁿ">xⁿ</button>
+      <button class="btn func" data-action="fact">x!</button>
+
+      <!-- Row 4: Clear & back -->
+      <button class="btn clear" data-action="clear">AC</button>
+      <button class="btn clear" data-action="backspace"><i class="fas fa-delete-left"></i></button>
+      <button class="btn func" data-action="(">(</button>
+      <button class="btn func" data-action=")">)</button>
+      <button class="btn operator" data-action="÷">÷</button>
+
+      <!-- Row 5: Numbers 7-9 & × -->
+      <button class="btn" data-action="7">7</button>
+      <button class="btn" data-action="8">8</button>
+      <button class="btn" data-action="9">9</button>
+      <button class="btn operator" data-action="×">×</button>
+      <button class="btn operator" data-action="−">−</button>
+
+      <!-- Row 6: Numbers 4-6 & + -->
+      <button class="btn" data-action="4">4</button>
+      <button class="btn" data-action="5">5</button>
+      <button class="btn" data-action="6">6</button>
+      <button class="btn operator" data-action="+">+</button>
+      <button class="btn equals" data-action="=">=</button>
+
+      <!-- Row 7: Numbers 1-3, 0, decimal -->
+      <button class="btn" data-action="1">1</button>
+      <button class="btn" data-action="2">2</button>
+      <button class="btn" data-action="3">3</button>
+      <button class="btn" data-action="0">0</button>
+      <button class="btn" data-action=".">.</button>
+
+      <!-- Row 8: ±, 00, π, e,  -->
+      <button class="btn func" data-action="±">±</button>
+      <button class="btn func" data-action="00">00</button>
+      <button class="btn func" data-action="π">π</button>
+      <button class="btn func" data-action="e">e</button>
+      <button class="btn func" data-action="exp">EXP</button>
+
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- JAVASCRIPT – FULL SCIENTIFIC ENGINE                          -->
+  <!-- ============================================================ -->
+  <script>
+    (function() {
+      'use strict';
+
+      // ---------- DOM refs ----------
+      const resultDisplay = document.getElementById('result');
+      const expressionDisplay = document.getElementById('expression');
+      const memIndicator = document.getElementById('memIndicator');
+      const memValueSpan = document.getElementById('memValue');
+      const historyPanel = document.getElementById('historyPanel');
+      const historyList = document.getElementById('historyList');
+      const historyToggle = document.getElementById('historyToggle');
+
+      // ---------- State ----------
+      let currentInput = '0'; // what's shown on screen
+      let previousInput = ''; // for chaining
+      let operator = null; // current operator
+      let shouldResetDisplay = false;
+      let memory = 0;
+      let hasMemory = false;
+      let history = [];
+      let lastAction = null; // to avoid double equals
+
+      // ---------- Helpers ----------
+      function updateDisplay() {
+        // Format number with commas? Keep raw for now.
+        let displayVal = currentInput;
+        if (displayVal === '') displayVal = '0';
+        // Avoid scientific notation for very large numbers? We'll keep as is.
+        resultDisplay.textContent = displayVal;
+        // Update expression (show previous + operator)
+        if (operator && previousInput !== '') {
+          expressionDisplay.textContent = `${previousInput} ${operator} ${currentInput}`;
+        } else if (previousInput && !operator) {
+          expressionDisplay.textContent = previousInput;
+        } else {
+          expressionDisplay.textContent = '';
+        }
+        // Memory indicator
+        if (hasMemory) {
+          memIndicator.style.display = 'flex';
+          memValueSpan.textContent = memory;
+        } else {
+          memIndicator.style.display = 'none';
+        }
+      }
+
+      function setCurrentInput(value) {
+        if (value === undefined || value === null) value = '0';
+        currentInput = String(value);
+        updateDisplay();
+      }
+
+      function resetState() {
+        currentInput = '0';
+        previousInput = '';
+        operator = null;
+        shouldResetDisplay = false;
+        lastAction = null;
+        updateDisplay();
+      }
+
+      // ---------- Core Math ----------
+      function compute(a, op, b) {
+        const numA = parseFloat(a);
+        const numB = parseFloat(b);
+        if (isNaN(numA) || isNaN(numB)) return 'Error';
+        let result;
+        switch (op) {
+          case '+':
+            result = numA + numB;
+            break;
+          case '−':
+            result = numA - numB;
+            break;
+          case '×':
+            result = numA * numB;
+            break;
+          case '÷':
+            if (numB === 0) return 'Error';
+            result = numA / numB;
+            break;
+          default:
+            return 'Error';
+        }
+        // Avoid floating point noise
+        if (Number.isFinite(result)) {
+          return String(parseFloat(result.toPrecision(15)));
+        }
+        return 'Error';
+      }
+
+      function evaluateExpression(expr) {
+        // Simple safe eval using Function constructor (safer than eval)
+        // We'll only allow numbers, operators, parentheses, and built-in functions.
+        // But for a calculator, we can use a more robust approach.
+        // For simplicity, we'll use a custom parser? Instead, we'll rely on the button logic.
+        // However, we need to handle expressions like "sin(45)" etc.
+        // We'll implement a basic evaluator.
+        try {
+          // Replace display symbols with JS equivalents
+          let sanitized = expr
+            .replace(/×/g, '*')
+            .replace(/÷/g, '/')
+            .replace(/−/g, '-')
+            .replace(/π/g, Math.PI)
+            .replace(/e(?![xp])/g, Math.E)
+            .replace(/sin\(/g, 'Math.sin(')
+            .replace(/cos\(/g, 'Math.cos(')
+            .replace(/tan\(/g, 'Math.tan(')
+            .replace(/log\(/g, 'Math.log10(')
+            .replace(/ln\(/g, 'Math.log(')
+            .replace(/sqrt\(/g, 'Math.sqrt(')
+            .replace(/x²/g, '**2')
+            .replace(/x³/g, '**3')
+            .replace(/xⁿ/g, '**')
+            .replace(/fact\(/g, 'factorial(')
+            .replace(/EXP/g, 'e+'); // not perfect but ok
+          // Add factorial function
+          function factorial(n) {
+            if (n < 0) return NaN;
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) result *= i;
+            return result;
+          }
+          // Use Function constructor
+          const fn = new Function('factorial', `return (${sanitized})`);
+          const val = fn(factorial);
+          if (typeof val === 'number' && Number.isFinite(val)) {
+            return String(parseFloat(val.toPrecision(15)));
+          }
+          return 'Error';
+        } catch (_) {
+          return 'Error';
+        }
+      }
+
+      // ---------- History ----------
+      function addHistory(expr, result) {
+        history.push({ expr, result });
+        if (history.length > 100) history.shift();
+        renderHistory();
+      }
+
+      function renderHistory() {
+        if (history.length === 0) {
+          historyList.innerHTML = '<div class="empty-history">No calculations yet.</div>';
+          return;
+        }
+        let html = '';
+        for (let i = history.length - 1; i >= 0; i--) {
+          const item = history[i];
+          html += `<div class="history-item">
+                      <span class="h-expr">${item.expr}</span>
+                      <span class="h-result">= ${item.result}</span>
+                    </div>`;
+        }
+        historyList.innerHTML = html;
+      }
+
+      // ---------- Button Actions ----------
+      function handleAction(action, value) {
+        // value is the button's text content or action string
+        switch (action) {
+          // ----- Numbers & Decimal -----
+          case '0':
+          case '1':
+          case '2':
+          case '3':
+          case '4':
+          case '5':
+          case '6':
+          case '7':
+          case '8':
+          case '9':
+            if (shouldResetDisplay) {
+              currentInput = action;
+              shouldResetDisplay = false;
+            } else {
+              if (currentInput === '0' && action !== '.') {
+                currentInput = action;
+              } else {
+                // Limit length
+                if (currentInput.replace('-', '').replace('.', '').length < 16) {
+                  currentInput += action;
+                }
+              }
+            }
+            lastAction = 'number';
+            updateDisplay();
+            break;
+
+          case '.':
+            if (shouldResetDisplay) {
+              currentInput = '0.';
+              shouldResetDisplay = false;
+            } else if (!currentInput.includes('.')) {
+              currentInput += '.';
+            }
+            lastAction = 'number';
+            updateDisplay();
+            break;
+
+          case '00':
+            if (shouldResetDisplay) {
+              currentInput = '0';
+              shouldResetDisplay = false;
+            } else {
+              if (currentInput !== '0') {
+                currentInput += '00';
+              }
+            }
+            lastAction = 'number';
+            updateDisplay();
+            break;
+
+          case '±':
+            if (currentInput !== '0') {
+              if (currentInput.startsWith('-')) {
+                currentInput = currentInput.substring(1);
+              } else {
+                currentInput = '-' + currentInput;
+              }
+            }
+            updateDisplay();
+            break;
+
+            // ----- Operators -----
+          case '+':
+          case '−':
+          case '×':
+          case '÷':
+            if (operator && !shouldResetDisplay && lastAction !== 'operator') {
+              // Chain calculation
+              const result = compute(previousInput, operator, currentInput);
+              if (result === 'Error') {
+                resetState();
+                setCurrentInput('Error');
+                return;
+              }
+              currentInput = result;
+              previousInput = result;
+              operator = action;
+              shouldResetDisplay = true;
+              updateDisplay();
+            } else {
+              if (previousInput === '' || shouldResetDisplay) {
+                previousInput = currentInput;
+              } else {
+                // if operator pressed after equals
+                const result = compute(previousInput, operator, currentInput);
+                if (result === 'Error') {
+                  resetState();
+                  setCurrentInput('Error');
+                  return;
+                }
+                currentInput = result;
+                previousInput = result;
+              }
+              operator = action;
+              shouldResetDisplay = true;
+            }
+            lastAction = 'operator';
+            updateDisplay();
+            break;
+
+          case '=':
+            if (operator && previousInput !== '') {
+              const result = compute(previousInput, operator, currentInput);
+              if (result === 'Error') {
+                resetState();
+                setCurrentInput('Error');
+                return;
+              }
+              // Add to history
+              const expr = `${previousInput} ${operator} ${currentInput}`;
+              addHistory(expr, result);
+              currentInput = result;
+              previousInput = '';
+              operator = null;
+              shouldResetDisplay = true;
+              lastAction = 'equals';
+              updateDisplay();
+            } else {
+              // if no operator, just evaluate expression if any
+              // But we can also allow equals to evaluate current display if it's an expression
+              // For simplicity, do nothing.
+              lastAction = 'equals';
+            }
+            break;
+
+            // ----- Clear & Back -----
+          case 'clear':
+            resetState();
+            lastAction = 'clear';
+            break;
+
+          case 'backspace':
+            if (shouldResetDisplay) {
+              resetState();
+            } else {
+              if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+              } else {
+                currentInput = '0';
+              }
+            }
+            lastAction = 'backspace';
+            updateDisplay();
+            break;
+
+            // ----- Parentheses -----
+          case '(':
+          case ')':
+            // Simple: append to current input if not reset
+            if (shouldResetDisplay) {
+              currentInput = action;
+              shouldResetDisplay = false;
+            } else {
+              currentInput += action;
+            }
+            lastAction = 'paren';
+            updateDisplay();
+            break;
+
+            // ----- Scientific functions -----
+          case 'sin':
+          case 'cos':
+          case 'tan':
+          case 'log':
+          case 'ln':
+          case 'sqrt':
+          case 'fact': {
+            const val = parseFloat(currentInput);
+            if (isNaN(val)) { resetState();
+              setCurrentInput('Error'); return; }
+            let result;
+            switch (action) {
+              case 'sin':
+                result = Math.sin(val);
+                break;
+              case 'cos':
+                result = Math.cos(val);
+                break;
+              case 'tan':
+                result = Math.tan(val);
+                break;
+              case 'log':
+                result = Math.log10(val);
+                break;
+              case 'ln':
+                result = Math.log(val);
+                break;
+              case 'sqrt':
+                result = Math.sqrt(val);
+                break;
+              case 'fact':
+                if (val < 0 || !Number.isInteger(val)) { resetState();
+                  setCurrentInput('Error'); return; }
+                let f = 1;
+                for (let i = 2; i <= val; i++) f *= i;
+                result = f;
+                break;
+            }
+            if (!Number.isFinite(result)) { resetState();
+              setCurrentInput('Error'); return; }
+            const displayVal = String(parseFloat(result.toPrecision(15)));
+            addHistory(`${action}(${currentInput})`, displayVal);
+            currentInput = displayVal;
+            shouldResetDisplay = true;
+            lastAction = 'func';
+            updateDisplay();
+            break;
+          }
+
+          case 'x²': {
+            const val = parseFloat(currentInput);
+            if (isNaN(val)) { resetState();
+              setCurrentInput('Error'); return; }
+            const result = val * val;
+            if (!Number.isFinite(result)) { resetState();
+              setCurrentInput('Error'); return; }
+            const displayVal = String(parseFloat(result.toPrecision(15)));
+            addHistory(`(${currentInput})²`, displayVal);
+            currentInput = displayVal;
+            shouldResetDisplay = true;
+            lastAction = 'func';
+            updateDisplay();
+            break;
+          }
+
+          case 'x³': {
+            const val = parseFloat(currentInput);
+            if (isNaN(val)) { resetState();
+              setCurrentInput('Error'); return; }
+            const result = val * val * val;
+            if (!Number.isFinite(result)) { resetState();
+              setCurrentInput('Error'); return; }
+            const displayVal = String(parseFloat(result.toPrecision(15)));
+            addHistory(`(${currentInput})³`, displayVal);
+            currentInput = displayVal;
+            shouldResetDisplay = true;
+            lastAction = 'func';
+            updateDisplay();
+            break;
+          }
+
+          case 'xⁿ': {
+            // We'll use a simple prompt for exponent – but to keep UI clean, we'll append '^'
+            // The user can then type exponent. We'll support via expression eval.
+            if (shouldResetDisplay) {
+              currentInput = '';
+              shouldResetDisplay = false;
+            }
+            currentInput += '^';
+            lastAction = 'func';
+            updateDisplay();
+            break;
+          }
+
+          case 'π':
+            if (shouldResetDisplay) {
+              currentInput = String(Math.PI);
+              shouldResetDisplay = false;
+            } else {
+              currentInput += Math.PI;
+            }
+            lastAction = 'number';
+            updateDisplay();
+            break;
+
+          case 'e':
+            if (shouldResetDisplay) {
+              currentInput = String(Math.E);
+              shouldResetDisplay = false;
+            } else {
+              currentInput += Math.E;
+            }
+            lastAction = 'number';
+            updateDisplay();
+            break;
+
+          case 'exp':
+            if (shouldResetDisplay) {
+              currentInput = '';
+              shouldResetDisplay = false;
+            }
+            currentInput += 'e+';
+            lastAction = 'func';
+            updateDisplay();
+            break;
+
+          case '%':
+            const pct = parseFloat(currentInput) / 100;
+            if (isNaN(pct)) { resetState();
+              setCurrentInput('Error'); return; }
+            currentInput = String(parseFloat(pct.toPrecision(15)));
+            shouldResetDisplay = true;
+            lastAction = 'func';
+            updateDisplay();
+            break;
+
+            // ----- Memory -----
+          case 'mc':
+            hasMemory = false;
+            memory = 0;
+            updateDisplay();
+            break;
+
+          case 'mr':
+            if (hasMemory) {
+              if (shouldResetDisplay) {
+                currentInput = String(memory);
+                shouldResetDisplay = false;
+              } else {
+                currentInput += String(memory);
+              }
+              updateDisplay();
+            }
+            lastAction = 'memory';
+            break;
+
+          case 'm+':
+            const valPlus = parseFloat(currentInput);
+            if (!isNaN(valPlus)) {
+              memory += valPlus;
+              hasMemory = true;
+              shouldResetDisplay = true;
+              updateDisplay();
+            }
+            lastAction = 'memory';
+            break;
+
+          case 'm-':
+            const valMinus = parseFloat(currentInput);
+            if (!isNaN(valMinus)) {
+              memory -= valMinus;
+              hasMemory = true;
+              shouldResetDisplay = true;
+              updateDisplay();
+            }
+            lastAction = 'memory';
+            break;
+
+          default:
+            // fallback: if action is a number or symbol, append
+            if (shouldResetDisplay) {
+              currentInput = action;
+              shouldResetDisplay = false;
+            } else {
+              currentInput += action;
+            }
+            updateDisplay();
+        }
+      }
+
+      // ---------- Event Binding ----------
+      function init() {
+        resetState();
+
+        // All buttons
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            const action = this.dataset.action;
+            const text = this.textContent.trim();
+            // If action is set, use that; else use text content
+            const val = action || text;
+            // For operators, we need to map symbols
+            handleAction(val, text);
+          });
+        });
+
+        // Keyboard support
+        document.addEventListener('keydown', function(e) {
+          const key = e.key;
+          // Prevent default for certain keys
+          if (key === 'Enter') {
+            e.preventDefault();
+            handleAction('=');
+            return;
+          }
+          if (key === 'Backspace') {
+            e.preventDefault();
+            handleAction('backspace');
+            return;
+          }
+          if (key === 'Escape') {
+            handleAction('clear');
+            return;
+          }
+          // Map keyboard to actions
+          const map = {
+            '0': '0',
+            '1': '1',
+            '2': '2',
+            '3': '3',
+            '4': '4',
+            '5': '5',
+            '6': '6',
+            '7': '7',
+            '8': '8',
+            '9': '9',
+            '.': '.',
+            '+': '+',
+            '-': '−',
+            '*': '×',
+            '/': '÷',
+            '(': '(',
+            ')': ')',
+            '^': 'xⁿ',
+            '%': '%',
+            'p': 'π',
+            'e': 'e',
+          };
+          if (key in map) {
+            e.preventDefault();
+            handleAction(map[key]);
+          }
+        });
+
+        // History toggle
+        historyToggle.addEventListener('click', function() {
+          historyPanel.classList.toggle('open');
+          if (historyPanel.classList.contains('open')) {
+            historyToggle.innerHTML = '<i class="fas fa-history"></i> Hide';
+          } else {
+            historyToggle.innerHTML = '<i class="fas fa-history"></i> History';
+          }
+        });
+
+        // Load history from localStorage?
+        // Not required, but we can persist if wanted. For simplicity, skip.
+      }
+
+      // ---------- Start ----------
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+
+    })();
+  </script>
+
+</body>
+</html>
