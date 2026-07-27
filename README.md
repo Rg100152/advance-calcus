@@ -45,3 +45,4 @@ No build tools, no dependencies – just open the HTML files and go.
 ---
 
 ## 📁 File Structure
+
